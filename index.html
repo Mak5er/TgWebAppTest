@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Telegram Web App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        function init() {
+            const tg = window.Telegram.WebApp;
+            tg.expand(); // Expand the web app to full height
+
+            const userData = {
+                id: tg.initDataUnsafe.user.id,
+                username: tg.initDataUnsafe.user.username,
+                first_name: tg.initDataUnsafe.user.first_name,
+                last_name: tg.initDataUnsafe.user.last_name
+            };
+
+            document.getElementById('user-info').innerText = `ID: ${userData.id}, Username: ${userData.username}, Name: ${userData.first_name} ${userData.last_name}`;
+
+            document.getElementById('send-text').addEventListener('click', function () {
+                const message = document.getElementById('message').value;
+                fetch(`https://your-server.com/send-message`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        user_id: userData.id,
+                        message: message
+                    })
+                }).then(response => response.json())
+                  .then(data => alert('Message sent: ' + data.status))
+                  .catch(error => console.error('Error:', error));
+            });
+        }
+
+        Telegram.WebApp.ready();
+    </script>
+</head>
+<body onload="init()">
+    <h1>Telegram Web App</h1>
+    <p id="user-info">Loading user data...</p>
+    <input type="text" id="message" placeholder="Enter your message">
+    <button id="send-text">Send to Bot</button>
+</body>
+</html>
